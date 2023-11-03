@@ -45,7 +45,6 @@ variable "resource_name_prefix" {
 variable "aws_profile" {
   type        = string
   description = "Informar o profile configurado no aws cli"
-  default     = "rbm-dimensa"
 }
 
 variable "aws_region" {
