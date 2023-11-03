@@ -8,24 +8,8 @@ variable "tag" {
   description = "the tag name used on the EC2 or RDS instance to contain the schedule json string for the instance."
 }
 
-variable "schedule_tag_force" {
-  type        = string
-  default     = "false"
-  description = "Whether to force the EC2 or RDS instance to have the default schedule tag is no schedule tag exists for the instance."
-}
-
-variable "exclude" {
-  default     = ""
-  description = "common separated list of EC2 and RDS instance ids to exclude from scheduling."
-}
-
-variable "default" {
-  default     = "{\"mon\": {\"start\": 7, \"stop\": 20},\"tue\": {\"start\": 7, \"stop\": 20},\"wed\": {\"start\": 7, \"stop\": 20},\"thu\": {\"start\": 7, \"stop\": 20}, \"fri\": {\"start\": 7, \"stop\": 20}}"
-  description = "the default schedule tag containing json schedule information to add to instance when schedule_tag_force set to true."
-}
-
 variable "time" {
-  default     = "gmt"
+  default     = "local"
   description = "timezone to use for scheduler. Can be 'local', 'gmt' or an Olson timezone from https://gist.github.com/ykessler/3349954. default is 'gmt'. local time is for the AWS region."
 }
 
@@ -37,7 +21,7 @@ variable "ec2_schedule" {
 
 variable "rds_schedule" {
   type        = string
-  default     = "true"
+  default     = "false"
   description = "Whether to do scheduling for RDS instances."
 }
 
@@ -56,4 +40,16 @@ variable "subnet_ids" {
 variable "resource_name_prefix" {
   default     = ""
   description = "a prefix to apply to resource names created by this module."
+}
+
+variable "aws_profile" {
+  type        = string
+  description = "Informar o profile configurado no aws cli"
+  default     = "rbm-dimensa"
+}
+
+variable "aws_region" {
+  type        = string
+  description = "Preecha a região a ser usada."
+  default     = "sa-east-1"
 }

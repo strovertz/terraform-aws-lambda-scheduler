@@ -6,7 +6,7 @@ Stop and start EC2 and RDS instances according to schedule via lambda and terraf
 The scheduler looks at the schedule tag to see if it needs to stop or start and instance.
 It works by setting a tag (default name schedule) to a string giving the stop and start time hour for each day.
 
-A schedule tag for an EC2 instance is json and looks like:
+A schedule tag for an EC2 instance with json looks like:
 ```json
 {"mon": {"start": 7, "stop": 19},"tue": {"start": 7, "stop": 19},"wed": {"start": [9, 22], "stop": 19},"thu": {"start": 7, "stop": [2,19]}, "fri": {"start": 7, "stop": 19}, "sat": {"start": 22}, "sun": {"stop": 7}}
 ```
@@ -24,7 +24,7 @@ Example:
 ```
 A stop is planned for 4,19 and 23 for each day - including the additional value for saturday and sunday.
 
-On a RDS instance the schedule tag is a string of keyword parameters separated by a space. To support multiple stop/start times per day, separate the hours with a `/`.
+On a RDS instance the schedule tag is a string of keyword parameters separated by a space. To support multiple stop/start times per day, separate the hours with a `/`. This syntax can also be used on an EC2 instance and can simplify your deployment.
 ```
 "mon_start=7 mon_stop=20 tue_start=7 tue_stop=20 wed_start=7/22 wed_stop=20 thu_start=7 thu_stop=2/20 fri_start=7 fri_stop=20"
 ```
@@ -44,7 +44,7 @@ This module requires Terraform version `0.12.x` or newer.
 
 This module depends on a correctly configured [AWS Provider](https://www.terraform.io/docs/providers/aws/index.html) in your Terraform codebase.
 
-## Usage
+## Usage (Only for original module/fork)
 
 ```
 module "lambda-scheduler" {
@@ -68,6 +68,21 @@ Default = "cron(5 * * * ? *)"  i.e. 5 minuts past the hour. for debugging use "r
 
 ### tag
 The tag name used on the EC2 and RDS instance to contain the schedule string for the instance. default is 'schedule'
+
+## Mods
+
+I modified the use of the module a little by removing the option to force tag application, this way we eliminated the variables:
+```python
+      SCHEDULE_TAG_FORCE = var.schedule_tag_force
+      EXCLUDE = var.exclude
+      DEFAULT = var.default
+```
+
+## Tip
+
+If you want to test its use, you can upload a **t2.micro** instance (eligible for free tier) and make modifications to your cron via eventbridge, change the "5" of cron(5 * * * ? *) to a value close to , e.g.: **cron(20 * * * ? *)**. This way at the next time, at 20 minutes, it will activate the lambda and you will be able to validate the operation of your automation.
+
+Remembering, the day's schedule for your instance needs to be set to the current time or the next hour, e.g.: it's 4:15 pm on Friday, I set it to 4:20 pm, the cron needs to contain **"fri_start=16"** OR **"fri_stop= 16"**.
 
 ### schedule_tag_force
 Whether to force the EC2 and RDS instance to have the default schedule tag if no schedule tag exists for the instance.

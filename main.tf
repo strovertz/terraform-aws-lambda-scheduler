@@ -40,15 +40,7 @@ data "aws_iam_policy_document" "ec2-access-scheduler" {
       "ec2:DescribeInstances",
       "ec2:StopInstances",
       "ec2:StartInstances",
-      "ec2:CreateTags",
-      "rds:DescribeDBInstances",
-      "rds:DescribeDBClusters",
-      "rds:StartDBCluster",
-      "rds:StopDBCluster",
-      "rds:StartDBInstance",
-      "rds:StopDBInstance",
-      "rds:ListTagsForResource",
-      "rds:AddTagsToResource",
+      "ec2:CreateTags"
     ]
     resources = [
       "*",
@@ -86,7 +78,15 @@ resource "aws_iam_policy" "scheduler_aws_lambda_basic_execution_role" {
                 "logs:PutLogEvents",
                 "ec2:CreateNetworkInterface",
                 "ec2:DescribeNetworkInterfaces",
-                "ec2:DeleteNetworkInterface"
+                "ec2:DeleteNetworkInterface",
+                "rds:DescribeDBInstances",
+                "rds:DescribeDBClusters",
+                "rds:StartDBCluster",
+                "rds:StopDBCluster",
+                "rds:StartDBInstance",
+                "rds:StopDBInstance",
+                "rds:ListTagsForResource",
+                "rds:AddTagsToResource"
             ],
             "Resource": "*"
         }
@@ -124,12 +124,9 @@ resource "aws_lambda_function" "scheduler_lambda" {
   environment {
     variables = {
       TAG                = var.tag
-      SCHEDULE_TAG_FORCE = var.schedule_tag_force
-      EXCLUDE            = var.exclude
-      DEFAULT            = var.default
       TIME               = var.time
-      RDS_SCHEDULE       = var.rds_schedule
       EC2_SCHEDULE       = var.ec2_schedule
+      RDS_SCHEDULE       = var.ec2_schedule
     }
   }
 }
